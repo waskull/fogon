@@ -16,7 +16,7 @@ export class Category{
     @UpdateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)", onUpdate: "CURRENT_TIMESTAMP(6)" })
     updateAt?: Date;
 
-    @OneToOne(type => Item, item => item.category)
-    item: Item;
+    // @OneToOne(type => Item, item => item.category)
+    // item: Item;
 
 }

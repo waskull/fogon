@@ -26,7 +26,12 @@ export class SaleController {
     @Auth()
     @Get()
     async getAll(@User() user: userEntity) {
-        return await this.saleService.getMany(user);
+        return await this.saleService.getMany(user,'');
+    }
+    @Auth()
+    @Get('custom/:filter')
+    async getAllByFilter(@User() user: userEntity, @Param('filter') filter: string) {
+        return await this.saleService.getMany(user, filter);
     }
     @Get('/stats')
     async getStats() {
@@ -44,6 +49,7 @@ export class SaleController {
     async getLastFout(@User() user: userEntity) {
         return await this.saleService.getLastFourByUser(user);
     }
+    
     @Auth()
     @Get('/client')
     async getAllByClient(@User() user: userEntity) {
@@ -63,7 +69,6 @@ export class SaleController {
         return await this.saleService.getOne(id);
     }
 
-    
 
     @Auth(
         {
@@ -82,7 +87,7 @@ export class SaleController {
         if (dto.paymentMethod !== (Method.Cash || Method.Credit_Card || Method.Debit_Card)) sale.pay_code = dto.pay_code
         sale.status = statusEnum.INCOMPLETE;
         sale.total = 0.0;
-        sale.user = user;
+        sale.user = await this.userService.getOneById(dto?.user);
         if (dto?.user === undefined) { sale.user = user; }
         sale.address = dto.address;
         if (!sale.user) throw new NotFoundException('Usuario Invalido');
@@ -312,17 +317,17 @@ export class SaleController {
 
     @Auth(
         {
-            possession: 'any',
-            action: 'delete',
+            possession: 'own',
+            action: 'update',
             resource: AppResource.SALE
         }
     )
     @Delete(':id')
     async delete(@Param('id', ParseIntPipe) id: number, @Res({ passthrough: true }) res) {
         const sale = await this.saleService.getOne(id);
-        if (sale.status !== statusEnum.INCOMPLETE) { return res.status(HttpStatus.BAD_REQUEST).json({ message: `Este pedido ya no puede ser cancelado` }); }
-        await this.saleService.delete(id);
-        return { message: "Pedido eliminado" }
+        if (sale.status !== statusEnum.INCOMPLETE)  throw new BadRequestException(`Este pedido ya no puede ser cancelado`)
+        await this.saleService.delete(sale);
+        return { message: "Pedido cancelado" }
     }
 
 

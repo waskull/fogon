@@ -15,6 +15,11 @@ export class ComplaintController {
     async getAll(@User() user: UserEntity) {
         return await this.complaintService.getMany(user);
     }
+    @Auth()
+    @Get('custom/:filter')
+    async getByFilter(@User() user: UserEntity,@Param('filter') filter: string) {
+        return await this.complaintService.getManyByFilter(user, filter);
+    }
     @Post('filter')
     async getBy(@Param('filter') filter: string) {
         return await this.complaintService.getManyBy(filter);

@@ -32,6 +32,34 @@ export class UserService {
             order: { firstname: "ASC" }
         });
     }
+    async getManyByRol(filter:string): Promise<User[]> {
+        if(filter === 'all'){
+            return await this.userRepository.find({
+                where: [
+                    {
+                        roles: Rol.MANAGER
+                    },
+                    {
+                        roles: Rol.CASHIER
+                    },
+                    {
+                        roles: Rol.DELIVERY_MAN
+                    }
+                ],
+                order: { firstname: "ASC" }
+            });
+        }
+        else{
+            return await this.userRepository.find({
+                where: [
+                    {
+                        roles: filter
+                    }
+                ],
+                order: { firstname: "ASC" }
+            });
+        }
+    }
     async getManyClients(): Promise<User[]> {
         return await this.userRepository.find({
             where: [

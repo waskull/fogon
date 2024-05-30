@@ -19,16 +19,33 @@ export class SaleService {
         @InjectRepository(SaleItems)
         private readonly saleItemRepository: Repository<SaleItems>,
     ) { }
-    async getMany(user: User): Promise<Sale[]> {
+    async getMany(user: User, filter:string): Promise<Sale[]> {
         let sales:Sale[] = [];
-        if(user.roles.includes(Rol.CLIENT)){
-            sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{user:{id:user.id}}, order: { createdAt: "DESC" } });
+        if(user?.roles?.includes(Rol.CLIENT)){
+            if(filter === 'Cancelados'){
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:[{user:{id:user.id},status: statusEnum.CANCELED_SYSTEM},{user:{id:user.id}, status: statusEnum.CANCELED}], order: { createdAt: "DESC" } });
+            }
+            else if(filter === 'Completados'){
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{user:{id:user.id}, status: statusEnum.COMPLETED}, order: { createdAt: "DESC" } });
+            }
+            else{
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{user:{id:user.id}, status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
+            }
+            
         }
-        else if(user.roles.includes(Rol.DELIVERY_MAN)){
+        else if(user?.roles?.includes(Rol.DELIVERY_MAN)){
             sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{delivery_man: {id:user.id},status:statusEnum.WAITING}, order: { createdAt: "DESC" } });
         }
         else{
-            sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], order: { createdAt: "DESC" } });
+            if(filter === 'Cancelados'){
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], where:[{status: statusEnum.CANCELED},{status: statusEnum.CANCELED_SYSTEM}], order: { createdAt: "DESC" } });
+            }
+            else if(filter === 'Completados'){
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:[{status: statusEnum.COMPLETED_TABLE},{status: statusEnum.COMPLETED}], order: { createdAt: "DESC" } });
+            }
+            else{
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], where:{status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
+            }
         }
         let newSales: any[] = [];
         sales.forEach(s => {
@@ -393,7 +410,7 @@ export class SaleService {
         return await this.saleItemRepository.query('select name, sum(quantity) as sales from sale_items inner join item on sale_items.item_id = item.id  group by name order by sum(quantity) desc limit 5;');
     }
     async getTopusers(): Promise<Sale[]> {
-        return await this.saleItemRepository.query('select firstname,lastname,count(*) as sales from sale inner join user on user.id = sale.user where sale.status="Producto entregado" group by firstname order by sales desc limit 5; ;');
+        return await this.saleItemRepository.query('select firstname,lastname,count(*) as sales from sale inner join user on user.id = sale.user where sale.status="Producto entregado" or sale.status="Comida servida" or sale.status="Esperando entrega" group by firstname order by sales desc limit 5; ;');
     }
     async getIncompletes(user_id: number): Promise<Sale[]> {
         const sales = await this.saleRepository.find({
@@ -556,9 +573,13 @@ export class SaleService {
 
         return saveItems;
     }
-    async delete(id: number) {
+    async deleteSale(id: number) {
         await this.saleItemRepository.delete({ sale_id: id });
         return this.saleRepository.delete(id);
+    }
+    async delete(sale: Sale) {
+        sale.status = statusEnum.CANCELED;
+        await this.saleRepository.save(sale);
     }
 
 

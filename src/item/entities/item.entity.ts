@@ -2,7 +2,7 @@
 import { OrderItems } from "../../order/entities";
 import { SaleItems } from "../../sale/entities/";
 import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Category } from "./category.entity";
+// import { Category } from "./category.entity";
 
 @Entity('item')
 export class Item{
@@ -33,9 +33,9 @@ export class Item{
     // @OneToOne(type => Inventory, inventory => inventory.item)
     // inventory: Inventory;
 
-    @OneToOne(() => Category, { onUpdate: 'CASCADE', onDelete: 'SET NULL' })
-    @JoinColumn({name: 'category_id'})
-    category: Category;
+    // @OneToOne(() => Category, { onUpdate: 'CASCADE', onDelete: 'SET NULL' })
+    // @JoinColumn({name: 'category_id'})
+    // category: Category;
 
     @OneToMany(type => OrderItems, (order_items) => order_items.item)
     order_item: OrderItems[];

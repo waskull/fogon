@@ -18,11 +18,12 @@ export class ComplaintService {
     ) { }
 
     async getMany(user:User): Promise<Complaint[]>{
-        console.log('====================================');
-        console.log(user,await this.complaintRepository.find({relations:['user','revisedBy'], where:{user:{id:user.id}}, order: {createdAt: 'desc'}}));
-        console.log('====================================');
         if(user.roles.includes(Rol.CLIENT)) return await this.complaintRepository.find({relations:['user','revisedBy'], where:{user:{id:user.id}}, order: {createdAt: 'desc'}});
         return await this.complaintRepository.find({relations:['user','revisedBy'], order: {createdAt: 'desc'}});
+    }
+    async getManyByFilter(user:User, filter:string): Promise<Complaint[]>{
+        if(user.roles.includes(Rol.CLIENT)) return await this.complaintRepository.find({relations:['user','revisedBy'], where:{user:{id:user.id}, complaintStatus: filter ? filter : null}, order: {createdAt: 'desc'}});
+        return await this.complaintRepository.find({relations:['user','revisedBy'],where:{complaintStatus: filter === 'all' ? null : filter}, order: {createdAt: 'desc'}});
     }
     async getManyBy(type:string): Promise<Complaint[]>{
         return await this.complaintRepository.find({relations:['user','revisedBy'], where:{type:type}, order: {createdAt: 'desc'} });

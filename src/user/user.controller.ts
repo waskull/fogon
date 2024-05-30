@@ -18,6 +18,10 @@ export class UserController {
     async getAll() {
         return this.userService.getMany();
     }
+    @Get('custom/:filter')
+    async getAllByRol(@Param('filter') filter) {
+        return this.userService.getManyByRol(filter);
+    }
     @Get('clients')
     async getAllClients() {
         return this.userService.getManyClients();
@@ -68,9 +72,6 @@ export class UserController {
 
     @Post('register')
     async registration(@Body() dto: UserRegistration) {
-        console.log('====================================');
-        console.log("aca");
-        console.log('====================================');
         const user = await this.userService.findOne(dto.email);
         const dni = await this.userService.findOneByDNI(dto.dni);
         if (user) throw new BadRequestException('Ese correo ya ha sido registrado');

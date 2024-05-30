@@ -33,9 +33,9 @@ export class ItemService {
             desc: dto.desc,
             image: dto.image,
             name: dto.name,
-            category: { id: dto.category },
+            // category: { id: dto.category },
             price: dto.price,
-            wholesale_price: dto.wholesale_price
+            // wholesale_price: dto.wholesale_price
         });
         return await this.itemRepository.save(editedItem);
     }
@@ -44,9 +44,9 @@ export class ItemService {
             desc: dto.desc,
             image: dto.image,
             name: dto.name,
-            category: { id: dto.category },
+            // category: { id: dto.category },
             price: dto.price,
-            wholesale_price: dto.wholesale_price
+            // wholesale_price: dto.wholesale_price
         });
         const item = await this.itemRepository.save(data);
 
