@@ -93,6 +93,10 @@ export class UserService {
     }
     async edit(id: number, editeduser: EditUserDto, userEntity?: User) {
         const user = await this.getOne(id);
+        const dni = await this.findOneByDNI(editeduser.dni);
+        if(dni && dni.dni !== user.dni){
+            throw new BadRequestException('El DNI ingresado ya se encuentra registrado');
+        }
         const editedUser = Object.assign(user, editeduser);
         return await this.userRepository.save(editedUser);
     }

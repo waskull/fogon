@@ -185,18 +185,21 @@ export class SaleController {
         if (sale.total < 30) sale.total += 4
         else if (sale.total >= 30 && sale.total < 60) sale.total += 2
         */
-        saleItems.forEach(async e => {
-            let item = new Item();
-            item = await this.itemService.getOneByItem(e.item.id);
-            if (item.stock < e.quantity) { return res.status(HttpStatus.BAD_REQUEST).json({ message: `No hay suficiente stock para el producto: ${item.name}` })}
-        });
+        let stockItems:Item[] = [];
+        for (let i = 0; i < saleItems.length; i++){
+            const item = await this.itemService.getOne(saleItems[i].item.id);
+            if (item.stock < saleItems[i].quantity) {stockItems.push(saleItems[i].item);}
+        }
+        if (stockItems.length > 0) {throw new BadRequestException(`No hay suficiente stock para ${stockItems.length>1 ? 'los productos' : 'el producto'}: ${stockItems.map((ee:Item) => {return ee.name})}`)}
+
         const newSale = await this.saleService.createSale(sale, saleItems, dto.table);
 
+        
         
         newSale.forEach(async e => {
             let item = new Item();
             item = await this.itemService.getOneByItem(e.item.id);
-            if (item.stock < e.quantity) { return res.status(HttpStatus.BAD_REQUEST).json({ message: `No hay suficiente stock para el producto: ${item.name}` })}
+            if (item.stock < e.quantity)  throw new BadRequestException(`No hay suficiente stock para el producto: ${item.name}`);
             item.stock -= e.quantity;
             this.itemService.reduceInventory(item);
         });
@@ -313,6 +316,23 @@ export class SaleController {
         if (sale.status !== statusEnum.INCOMPLETE) { return res.status(HttpStatus.BAD_REQUEST).json({ message: `Este pedido ya no puede ser cancelado` }); }
         await this.saleService.setSaleCanceled_BySystem(id);
         return { message: "Pedido cancelado" }
+    }
+
+    @Auth(
+        {
+            possession: 'own',
+            action: 'update',
+            resource: AppResource.SALE
+        }
+    )
+
+    @Patch('confirmorder/:id')
+    async delivered(@Param('id', ParseIntPipe) id: number, @Res({ passthrough: true }) res) {
+        console.log(id);
+        const sale = await this.saleService.getOne(id);
+        if (sale.status !== statusEnum.COMPLETED) { throw new BadRequestException(`El pedido seleccionado no puede ser procesado`); }
+        await this.saleService.confirmOrder(id);
+        return { message: "Pedido confirmado" }
     }
 
     @Auth(

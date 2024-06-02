@@ -488,15 +488,23 @@ export class SaleService {
         return await this.saleRepository.save({
             id: sale.id,
             delivery_man: { id: delivery_man },
-            status: statusEnum.WAITING
+            status: statusEnum.WAITING,
+            payment_date: new Date()
         });
     }
     async completeSaleById(id: number) {
         const sale = await this.getOne(id);
         return await this.saleRepository.save({
             id: sale.id,
-            status: statusEnum.COMPLETED,
-            payment_date: new Date()
+            status: statusEnum.COMPLETED
+        });
+    }
+
+    async confirmOrder(id: number) {
+        const sale = await this.getOne(id);
+        return await this.saleRepository.save({
+            id: sale.id,
+            delivered: true
         });
     }
 

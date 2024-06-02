@@ -66,6 +66,9 @@ export class UserController {
     async create(@Body() dto: CreateUserDto) {
         const user = await this.userService.findOne(dto.email);
         if (user) throw new BadRequestException('Ese correo ya ha sido registrado');
+        const dni = await this.userService.findOneByDNI(dto.dni);
+
+        if (dni) throw new BadRequestException('Esa cedula ya ha sido registrada');
         const result = await this.userService.create(dto);
         return { message: `Usuario: ${dto.firstname} ${dto.lastname} creado`, data: result }
     }

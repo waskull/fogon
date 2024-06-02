@@ -56,6 +56,9 @@ export class Sale{
     @JoinColumn({name: 'table_id'})
     selected_table: Table;
 
+    @Column({type: 'boolean', default:false, nullable: true})
+    delivered:boolean;
+
     // @ManyToOne(type => Table, (table) => table.sales, { cascade:true, onUpdate: 'CASCADE', onDelete: 'SET NULL' })
     // @JoinColumn({name: "table_id"})
     // table: Table;
