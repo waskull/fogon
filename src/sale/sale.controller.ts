@@ -123,8 +123,7 @@ export class SaleController {
 
         }
         */
-        if (sale.total < 30) sale.total += 4
-        else if (sale.total >= 30 && sale.total < 60) sale.total += 2
+        sale.total = subtotal + 4;
         
         return await this.saleService.create(sale, saleItems);
     }
