@@ -5,13 +5,11 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Item } from '../item/entities/item.entity';
 import { ItemService } from '../item/item.service';
 import { createMock } from '@golevelup/ts-jest';
-import { Inventory } from '../inventory/entities/inventory.entity';
-import { InventoryService } from '../inventory/inventory.service';
 import { SaleItems, Sale } from './entities';
 describe('SaleService', () => {
     //let service: SaleService;
     let repo: Repository<Sale>;
-    jest.setTimeout(30000);
+    jest.setTimeout(20000);
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -20,9 +18,6 @@ describe('SaleService', () => {
                 },
                 ItemService, {
                     provide: getRepositoryToken(Item), useValue: createMock<Repository<Item>>()
-                },
-                InventoryService, {
-                    provide: getRepositoryToken(Inventory), useValue: createMock<Repository<Inventory>>()
                 },
                 {
                     provide: getRepositoryToken(SaleItems), useValue: createMock<Repository<SaleItems>>()

@@ -1,6 +1,6 @@
 import { IsEnum, IsString, MinLength } from "class-validator";
 import { ComplaintType } from "../enums/ComplaintType.enum";
-import { EnumToString } from "src/common/utils/enumToString";
+import { EnumToString } from "../../common/utils/enumToString";
 
 export class ComplaintDTO{
     @IsString({message:'El reclamo, sugerencia o queja debe de ser una cadena de caracteres'})

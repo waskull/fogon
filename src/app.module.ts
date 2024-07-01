@@ -16,8 +16,6 @@ import { ItemModule } from './item/item.module';
 import { SaleModule } from './sale/sale.module';
 // import { InventoryModule } from './inventory/inventory.module';
 import { OrderModule } from './order/order.module';
-import { ComplaintController } from './complaint/complaint.controller';
-import { ComplaintService } from './complaint/complaint.service';
 import { ComplaintModule } from './complaint/complaint.module';
 import { TablesModule } from './tables/tables.module';
 
@@ -68,7 +66,7 @@ const localEmailConfig = {
         synchronize: true,
         ssl: true,
         logging: true,
-        logger: 'simple-console',
+        logger: 'debug',
       })
     }),
     AuthModule,

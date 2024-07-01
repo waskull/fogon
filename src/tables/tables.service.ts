@@ -6,7 +6,6 @@ import { CreateTableDto } from './dtos/create-table.dto';
 import { User } from '../user/entities/user.entity';
 import { EditTableAvailabilityDto, EditTableDto } from './dtos/edit-table.dto';
 import { Sale } from '../sale/entities';
-import { statusEnum } from 'src/sale/enum';
 
 @Injectable()
 export class TablesService {

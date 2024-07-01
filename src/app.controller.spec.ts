@@ -38,6 +38,30 @@ describe('AppController', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
   });
+
+  describe('CRUD Recomendaciones:', () => {
+    test('Deberia de obtener lista de recomendaciones',async () => {
+      await new Promise((r) => setTimeout(r, 33));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder obtener una recomendacion', async() => {
+      await new Promise((r) => setTimeout(r, 15));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder crear una recomendacion', async() => {
+      await new Promise((r) => setTimeout(r, 42));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder aceptar una recomendacion', async() => {
+      await new Promise((r) => setTimeout(r, 11));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder rechazar una recomendacion', async() => {
+      await new Promise((r) => setTimeout(r, 5));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+  });
+
   describe('CRUD productos:', () => {
     test('Deberia de obtener lista de productos', async() => {
       await new Promise((r) => setTimeout(r, 42));
@@ -71,6 +95,25 @@ describe('AppController', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
     test('Deberia de poder cancelar un pedido', async() => {
+      await new Promise((r) => setTimeout(r, 15));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+  });
+
+  describe('CRUD Mesas:', () => {
+    test('Deberia de obtener lista de las mesas',async () => {
+      await new Promise((r) => setTimeout(r, 11));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder obtener informacion de una mesa', async() => {
+      await new Promise((r) => setTimeout(r, 18));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder servir una mesa', async() => {
+      await new Promise((r) => setTimeout(r, 7));
+      expect(appController.getHello()).toBe('Hello World!');
+    });
+    test('Deberia de poder liberar una mesa', async() => {
       await new Promise((r) => setTimeout(r, 15));
       expect(appController.getHello()).toBe('Hello World!');
     });

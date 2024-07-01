@@ -2,7 +2,7 @@ import { User } from "../../user/entities/user.entity";
 import { Column, JoinColumn, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, OneToMany, JoinTable, UpdateDateColumn, OneToOne,  } from "typeorm";
 import { SaleItems } from "./sale_item.entity";
 import { Method, statusEnum } from '../enum/';
-import { Table } from "src/tables/entities/tables.entity";
+import { Table } from "../../tables/entities/tables.entity";
 
 @Entity('sale')
 export class Sale{

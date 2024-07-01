@@ -3,8 +3,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { LocalAuthGuard } from './guards/';
 import { AppModule } from '../app.module';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';

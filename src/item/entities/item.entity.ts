@@ -27,9 +27,6 @@ export class Item{
     @Column({type: 'decimal',precision:11, scale:2, default:0.02, nullable: false})
     price:number;
 
-    @Column({type: 'decimal',precision:11, scale:2, default:0.01, nullable: false})
-    wholesale_price:number;
-
     // @OneToOne(type => Inventory, inventory => inventory.item)
     // inventory: Inventory;
 

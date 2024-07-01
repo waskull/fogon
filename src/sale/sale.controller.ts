@@ -108,8 +108,8 @@ export class SaleController {
             const item = await this.itemService.getOneByItem(saleItems[i].item.id);
             subtotal += (saleItems[i].quantity * parseFloat(item.price.toString()));
         }
-        //Provisional
-        sale.total = subtotal;
+       
+        sale.total = subtotal + 4;
         /*
         for (var i = 0; i < saleItems.length; i++) {
             const item = await this.itemService.getOneByItem(saleItems[i].item.id);
@@ -123,7 +123,6 @@ export class SaleController {
 
         }
         */
-        sale.total = subtotal + 4;
         
         return await this.saleService.create(sale, saleItems);
     }

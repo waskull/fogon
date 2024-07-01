@@ -146,7 +146,7 @@ export class OrderService {
                 },
                 {
                     ul: [
-                        'Este es un reporte de compra generado por el sistema FOGON.'
+                        'Este es un reporte de compra generado por el sistema FOGÓN.'
                     ],
                 },
             ],
@@ -287,7 +287,7 @@ export class OrderService {
                 },
                 {
                     ul: [
-                        'Esto es un reporte de pedidos generado por el sistema FOGON.'
+                        'Esto es un reporte de pedidos generado por el sistema FOGÓN.'
                     ],
                 },
             ],

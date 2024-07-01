@@ -204,7 +204,7 @@ export class SaleService {
                         widths: ['*', 'auto', 'auto', 'auto'],
                         body: [
                             ['Artículo', 'Precio', 'Cantidad', 'Monto'],
-                            ...sale.sale_items.map(p => ([p?.item.name, sale.total >= 10 ? p?.item.wholesale_price : p?.item?.price, p?.quantity, parseFloat(sale.total >= 10 ? (p?.item.wholesale_price * p?.quantity).toString() : (p?.item.price * p?.quantity).toString()).toFixed(2)])),
+                            ...sale.sale_items.map(p => ([p?.item.name, p?.item?.price, p?.quantity, parseFloat((p?.item.price * p?.quantity).toString()).toFixed(2)])),
                         ]
                     },
                 },
@@ -235,7 +235,7 @@ export class SaleService {
                 },
                 {
                     ul: [
-                        'Este es un reporte de pedido generado por el sistema FOGON.'
+                        'Este es un reporte de pedido generado por el sistema FOGÓN.'
                     ],
                 },
             ],
@@ -374,7 +374,7 @@ export class SaleService {
                 },
                 {
                     ul: [
-                        'Esto es un reporte de pedidos generado por el sistema FOGON.'
+                        'Esto es un reporte de pedidos generado por el sistema FOGÓN.'
                     ],
                 },
             ],

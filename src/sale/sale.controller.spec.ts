@@ -4,6 +4,7 @@ import { AppModule } from '../app.module';
 import { SaleService } from './sale.service';
 import { ItemService } from '../item/item.service';
 import { UserService } from '../user/user.service';
+import { TablesService } from '../tables/tables.service';
 
 describe('SaleController', () => {
   let controller: SaleController;
@@ -22,6 +23,14 @@ describe('SaleController', () => {
       },
       {
         provide: ItemService,
+        useValue: {
+          findOne: jest.fn(),
+          save: jest.fn(),
+          create: jest.fn(),
+        }
+      },
+      {
+        provide: TablesService,
         useValue: {
           findOne: jest.fn(),
           save: jest.fn(),

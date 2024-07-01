@@ -14,8 +14,7 @@ export class ItemService {
         // private readonly inventoryRepository: Repository<Inventory>
     ) { }
     async getMany(): Promise<Item[]> {
-        console.log(await this.itemRepository.find());
-        return await this.itemRepository.find();
+        return await this.itemRepository.find({order:{name:'ASC'}});
     }
     async getOne(id: number): Promise<Item> {
         const item = await this.itemRepository.findOne({ where: { id: id } })
@@ -86,7 +85,7 @@ export class ItemService {
         inventory.forEach(object => {
             let lowstock = false;
             if (object.stock < 20) lowstock = true
-            newInventory.push({ stock:object.stock,name: object.name, image: object.image, price: object.price, wholesale_price: object.wholesale_price, id: object.id, lowstock: lowstock, desc: object.desc });
+            newInventory.push({ stock:object.stock,name: object.name, image: object.image, price: object.price, id: object.id, lowstock: lowstock, desc: object.desc });
 
         });
         return newInventory;

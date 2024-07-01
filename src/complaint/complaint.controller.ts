@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { ComplaintService } from './complaint.service';
 import { User as UserEntity } from '../user/entities/user.entity';
-import { Auth, User } from 'src/common/decorators';
+import { Auth, User } from '../common/decorators';
 import { ComplaintDTO } from './dtos/create-complaint.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { EditComplaintDTO } from './dtos/edit-complaint.dto';

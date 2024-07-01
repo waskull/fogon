@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseBoolPipe, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { TablesService } from './tables.service';
 import { User as UserEntity } from '../user/entities/user.entity';
-import { User } from 'src/common/decorators';
+import { User } from '../common/decorators';
 import { CreateTableDto } from './dtos/create-table.dto';
 import { EditTableDto, EditTableAvailabilityDto } from './dtos/edit-table.dto';
 import { ApiTags } from '@nestjs/swagger';

@@ -4,10 +4,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Sale } from '../sale/entities';
 import { ComplaintDTO } from './dtos/create-complaint.dto';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { EditComplaintDTO } from './dtos/edit-complaint.dto';
 import { User as UserEntity } from '../user/entities/user.entity';
-import { Rol } from 'src/user/enum';
+import { Rol } from '../user/enum';
 
 @Injectable()
 export class ComplaintService {
