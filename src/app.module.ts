@@ -64,7 +64,7 @@ const localEmailConfig = {
         entities: [__dirname + './**/**/*entity{.ts,.js}'],
         autoLoadEntities: true,
         synchronize: true,
-        ssl: false,
+        ssl: true,
         logging: true,
         logger: 'debug',
       })
