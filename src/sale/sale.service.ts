@@ -138,7 +138,7 @@ export class SaleService {
                     bold: true,
                     alignment: 'center',
                     decoration: 'underline',
-                    color: '#18409d'
+                    color: 'black'
                 },
 
                 {
@@ -316,7 +316,7 @@ export class SaleService {
                     bold: true,
                     alignment: 'center',
                     decoration: 'underline',
-                    color: '#18409d'
+                    color: 'black'
                 },
 
                 {

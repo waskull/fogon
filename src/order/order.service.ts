@@ -83,7 +83,7 @@ export class OrderService {
                     bold: true,
                     alignment: 'center',
                     decoration: 'underline',
-                    color: '#18409d'
+                    color: 'black'
                 },
 
                 {
@@ -229,7 +229,7 @@ export class OrderService {
                     bold: true,
                     alignment: 'center',
                     decoration: 'underline',
-                    color: '#18409d;'
+                    color: 'black'
                 },
 
                 {
