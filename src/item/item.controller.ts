@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Patch, Delete, Post, Body, ParseIntPipe, UploadedFile, UseInterceptors, UseGuards, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpException, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Delete, Post, Body, ParseIntPipe, UploadedFile, UseInterceptors, UseGuards, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, HttpException, HttpStatus, Res, BadRequestException } from '@nestjs/common';
 import { CreateItemDto, EditItemDto } from './dtos';
 import { ItemService } from './item.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -55,9 +55,9 @@ export class ItemController {
     @UseInterceptors(FileInterceptor('image', multerOptions))
     async imagen(@Body() dataform, @UploadedFile() file: Express.Multer.File, @Res({ passthrough: true }) res) {
 
-        if (!dataform?.name || dataform?.name.length < 2) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un nombre con al menos 2 caracteres` });
-        if (!dataform?.desc || dataform?.desc.length < 2) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer una descripción con al menos 2 caracteres` });
-        if (!dataform?.price || parseFloat(dataform?.price) <= 0.0) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un precio detal de al menos 0.1` });
+        if (!dataform?.name || dataform?.name.length < 2) throw new BadRequestException(`Debes proveer un nombre con al menos 2 caracteres`)
+        if (!dataform?.desc || dataform?.desc.length < 2) throw new BadRequestException(`Debes proveer una descripción con al menos 2 caracteres`)
+        if (!dataform?.price || parseFloat(dataform?.price) < 0.1) throw new BadRequestException(`Debes proveer un precio detal de al menos 0.1`)
         // if (!dataform?.wholesale_price || parseFloat(dataform?.wholesale_price) <= 0.0) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un precio al mayor que sea mayor a 0.1` });
         // if (parseFloat(dataform?.wholesale_price) > parseFloat(dataform?.price)) return res.status(HttpStatus.BAD_REQUEST).json({ message: `El precio al mayor no puede ser superior al precio al detal` });
         const itemDto: CreateItemDto = {
@@ -69,7 +69,7 @@ export class ItemController {
             // category: dataform?.category
         }
 
-        if (!itemDto.image) itemDto.image = "fogon.png";
+        if (!file?.filename) itemDto.image = "/images/fogon.png";
 
         await this.itemService.findOneByName(dataform.name);
         return await this.itemService.create(itemDto);
@@ -96,9 +96,9 @@ export class ItemController {
         @Body() dataform,
         @UploadedFile() file: Express.Multer.File,
         @Res({ passthrough: true }) res) {
-        if (!dataform?.name || dataform?.name.length < 2) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un nombre con al menos 2 caracteres` });
-        if (!dataform?.desc || dataform?.desc.length < 2) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer una descripción con al menos 2 caracteres` });
-        if (!dataform?.price || parseFloat(dataform?.price) < 0.1) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un precio detal de al menos 0.1` });
+        if (!dataform?.name || dataform?.name.length < 2) throw new BadRequestException(`Debes proveer un nombre con al menos 2 caracteres`)
+        if (!dataform?.desc || dataform?.desc.length < 2) throw new BadRequestException(`Debes proveer una descripción con al menos 2 caracteres`)
+        if (!dataform?.price || parseFloat(dataform?.price) < 0.1) throw new BadRequestException(`Debes proveer un precio detal de al menos 0.1`)
         // if (!dataform?.wholesale_price || parseFloat(dataform?.wholesale_price) < 0.1) return res.status(HttpStatus.BAD_REQUEST).json({ message: `Debes proveer un precio al mayor que sea mayor a 0.1` });
         // if (parseFloat(dataform?.wholesale_price) > parseFloat(dataform?.price)) return res.status(HttpStatus.BAD_REQUEST).json({ message: `El precio al mayor no puede ser superior al precio al detal` });
         const itemDto: CreateItemDto = {
@@ -109,10 +109,9 @@ export class ItemController {
             // wholesale_price: parseFloat(dataform?.wholesale_price),
             // category: dataform?.category
         }
-
-        if (!itemDto.image) itemDto.image = "fogon.png";
-
-        await this.itemService.findOneByName(dataform.name);
+        if (!file?.filename) itemDto.image = "/images/fogon.png";
+        console.log("after",itemDto);
+        await this.itemService.findOneByNameAndID(dataform.name, id);
         await this.itemService.edit(id, itemDto);
 
 

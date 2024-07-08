@@ -22,8 +22,13 @@ export class ItemService {
         return item;
     }
     async findOneByName(name: string): Promise<Item> {
-        const item = await this.itemRepository.findOne({ where: { name: name } })
+        const item = await this.itemRepository.findOne({ where: { name: name } });
         if (item) throw new BadRequestException('Ya existe ese articulo');
+        return item;
+    }
+    async findOneByNameAndID(name: string, id: number): Promise<Item> {
+        const item = await this.itemRepository.findOne({ where: { name: name } });
+        if (item && item?.id !== id) throw new BadRequestException('Ya existe ese articulo');
         return item;
     }
     async edit(id: number, dto: EditItemDto) {
