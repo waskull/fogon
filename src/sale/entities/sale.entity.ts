@@ -38,6 +38,10 @@ export class Sale{
 	@ManyToOne(type => User, (user) => user.delivery_man, { cascade:true, onUpdate: 'CASCADE', onDelete: 'SET NULL' })
     @JoinColumn({name: "delivery_man_id"})
     delivery_man: User;
+
+    @ManyToOne(type => User, (user) => user.salesman_sales, { cascade:true, onUpdate: 'CASCADE', onDelete: 'SET NULL' })
+    @JoinColumn({name: "salesman_id"})
+    salesman: User;
 	
 	@ManyToOne(type => User, (user) => user.sales, { cascade:true, onUpdate: 'CASCADE', onDelete: 'SET NULL' })
     @JoinColumn({name: "user"})

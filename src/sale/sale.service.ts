@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, In, Repository } from 'typeorm';
 import { Sale, SaleItems } from './entities/'
-import { statusEnum } from './enum';
+import { Method, statusEnum } from './enum';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Dates } from '../sale/dtos';
 import PdfPrinter from 'pdfmake';
@@ -23,28 +23,28 @@ export class SaleService {
         let sales:Sale[] = [];
         if(user?.roles?.includes(Rol.CLIENT)){
             if(filter === 'Cancelados'){
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:[{user:{id:user.id},status: statusEnum.CANCELED_SYSTEM},{user:{id:user.id}, status: statusEnum.CANCELED}], order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'],where:[{user:{id:user.id},status: statusEnum.CANCELED_SYSTEM},{user:{id:user.id}, status: statusEnum.CANCELED}], order: { createdAt: "DESC" } });
             }
             else if(filter === 'Completados'){
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{user:{id:user.id}, status: statusEnum.COMPLETED}, order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'],where:{user:{id:user.id}, status: statusEnum.COMPLETED}, order: { createdAt: "DESC" } });
             }
             else{
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{user:{id:user.id}, status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'],where:{user:{id:user.id}, status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
             }
             
         }
         else if(user?.roles?.includes(Rol.DELIVERY_MAN)){
-            sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:{delivery_man: {id:user.id},status:statusEnum.WAITING}, order: { createdAt: "DESC" } });
+            sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'],where:{delivery_man: {id:user.id},status:statusEnum.WAITING}, order: { createdAt: "DESC" } });
         }
         else{
             if(filter === 'Cancelados'){
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], where:[{status: statusEnum.CANCELED},{status: statusEnum.CANCELED_SYSTEM}], order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'], where:[{status: statusEnum.CANCELED},{status: statusEnum.CANCELED_SYSTEM}], order: { createdAt: "DESC" } });
             }
             else if(filter === 'Completados'){
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'],where:[{status: statusEnum.COMPLETED_TABLE},{status: statusEnum.COMPLETED}], order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'],where:[{status: statusEnum.COMPLETED_TABLE},{status: statusEnum.COMPLETED}], order: { createdAt: "DESC" } });
             }
             else{
-                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], where:{status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
+                sales = await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'], where:{status: filter === 'all' ? null : filter}, order: { createdAt: "DESC" } });
             }
         }
         let newSales: any[] = [];
@@ -67,7 +67,7 @@ export class SaleService {
     }
     async getManyByDate(dates: Dates): Promise<Sale[]> {
         return await this.saleRepository.find({
-            relations: ['sale_items', 'sale_items.item', 'user'], where: [{
+            relations: ['sale_items', 'sale_items.item', 'user','delivery_man', 'salesman'], where: [{
                 createdAt: Between(
                     dates.start,
                     dates.end
@@ -146,51 +146,85 @@ export class SaleService {
                         [
                             {
                                 text: `Fecha de solicitud: ${new Date(sale.createdAt).toLocaleDateString("es-VE", { day: "2-digit", month: "2-digit", year: "numeric" })}`,
-                                alignment: 'right',fontSize:12
+                                alignment: 'right',fontSize:10
+                            },
+                            sale?.payment_date && {
+                                text: `Fecha de pago: ${new Date(sale.payment_date).toLocaleDateString("es-VE", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: '2-digit' })}`,
+                                alignment: 'right',fontSize:10
                             },
                             {
                                 text: `Pedido: #${code}`,
-                                alignment: 'right',fontSize:12
+                                alignment: 'right',fontSize:10
                             },
-                            {
-                                text: sale?.user?.firstname ? `usere: ${sale?.user?.firstname} ${sale.user?.lastname}` : 'usere: ',
-                                alignment: 'left',
-                                bold: false,fontSize:1
-                            },
-                            {
+                            sale?.user && {
+                                
                                 text: sale?.user?.dni ? `Cédula: ${sale?.user?.dni}` : 'Cédula: ',
                                 alignment: 'left',
-                                bold: false,fontSize:12
+                                bold: false,fontSize:10
                             },
-
+                            sale?.user && 
+                            {
+                                text: sale?.user?.firstname ? `usuario: ${sale?.user?.firstname} ${sale.user?.lastname}` : 'usere: ',
+                                alignment: 'left',
+                                bold: false,fontSize:10
+                            },
+                            sale?.user &&
                             {
                                 text: sale?.user?.phone ? `Teléfono: ${sale?.user?.phone}` : 'Teléfono: ',
                                 alignment: 'left',
-                                bold: false,fontSize:12
+                                bold: false,fontSize:10
                             },
-
+                            sale?.user &&
                             {
                                 text: sale?.user?.email ? `Correo: ${sale?.user?.email}` : 'Correo: ',
                                 alignment: 'left',
-                                bold: false,fontSize:12
+                                bold: false,fontSize:10
                             },
                             {
                                 text: `Método de pago: ${sale?.paymentMethod}`,
                                 alignment: 'left',
-                                bold: false,fontSize:12
+                                bold: false,fontSize:10
                             },
 
+                            sale?.pay_code && sale?.pay_code[0] !== Method.Cash && {
+                                text: `Referencia de pago: ${sale?.pay_code[0]}`,
+                                alignment: 'left',
+                                bold: false,fontSize:10
+                            },
+                            sale?.address &&
                             {
                                 text: `Dirección: ${sale?.address}`,
                                 alignment: 'left',
-                                bold: false,fontSize:12
+                                bold: false,fontSize:10
+                            },
+                            sale?.isOrder ?
+                            {
+                                text: `Tipo: pedido a domicilio`,
+                                alignment: 'left',
+                                bold: false,fontSize:10
+                            } :
+                            {
+                                text: `Tipo de pedido: mesa`,
+                                alignment: 'left',
+                                bold: false,fontSize:10
+                            },
+
+                            sale?.delivery_man &&{
+                                text: `Repartidor: ${sale?.delivery_man?.firstname} ${sale?.delivery_man?.lastname}`,
+                                alignment: 'left',
+                                bold: false,fontSize:10
+                            },
+                            sale?.salesman && {
+                                text: `Aprobado por: ${sale?.salesman?.firstname} ${sale?.salesman?.lastname}`,
+                                alignment: 'left',
+                                bold: false,fontSize:10
                             },
                             {
                                 text: `Estado: ${sale.status}`,
                                 alignment: 'left',
                                 bold: true,
-                                decoration: 'underline',fontSize:12
-                            }
+                                decoration: 'underline',fontSize:10
+                            },
                         ]
                     ]
                 },
@@ -323,7 +357,7 @@ export class SaleService {
                     columns: [
                         [
                             {
-                                text: `Fecha: ${new Date().toLocaleDateString("es-VE", { day: "2-digit", month: "2-digit", year: "numeric" })}`,
+                                text: `Fecha del reporte: ${new Date().toLocaleDateString("es-VE", { day: "2-digit", month: "2-digit", year: "numeric" })}`,
                                 alignment: 'right'
                             },
                             {
@@ -342,8 +376,8 @@ export class SaleService {
                         headerRows: 1,
                         widths: ['auto', '*', 'auto', 'auto', 'auto', 'auto'],
                         body: [
-                            ['ID', 'Artículo', 'Precio', 'Cantidad', 'Monto', 'Usuario'],
-                            ...data.map(p => ([p?.id, p?.item.name, parseFloat(p?.item?.price), p?.quantity, (parseFloat(p?.item?.price) * p?.quantity).toFixed(2), `${p?.user?.firstname} ${p?.user?.lastname}`])),
+                            ['ID', 'Artículo', 'Precio', 'Cantidad', 'Monto', 'Cliente'],
+                            ...data.map(p => ([p?.id, p?.item.name, parseFloat(p?.item?.price), p?.quantity, (parseFloat(p?.item?.price) * p?.quantity).toFixed(2), p?.user?.firstname ? `${p?.user?.firstname} ${p?.user?.lastname}` : 'N/A'])),
                         ]
                     },
                 },
@@ -402,7 +436,7 @@ export class SaleService {
         return await this.saleRepository.find({ relations: ['sale_items', 'sale_items.item', 'user'], order: { createdAt: "DESC" }, take: 4 });
     }
     async getOne(id: number): Promise<Sale> {
-        const sale = await this.saleRepository.findOne({ relations: ['sale_items', 'sale_items.item', 'user'], where: { id: id } })
+        const sale = await this.saleRepository.findOne({ relations: ['sale_items', 'sale_items.item', 'user','salesman','delivery_man'], where: { id: id } })
         if (!sale) throw new NotFoundException('El pedido no existe');
         return sale;
     }
@@ -483,12 +517,13 @@ export class SaleService {
         return await this.saleRepository.save(sale);
     }
 
-    async confirmSale(id: number, delivery_man: number) {
+    async confirmSale(id: number, delivery_man: number, user: User) {
         const sale = await this.getOne(id);
         return await this.saleRepository.save({
             id: sale.id,
             delivery_man: { id: delivery_man },
             status: statusEnum.WAITING,
+            salesman: user,
             payment_date: new Date()
         });
     }
@@ -554,7 +589,8 @@ export class SaleService {
     }
     async createSale(sale: Sale, newItems: SaleItems[], table:number): Promise<SaleItems[]>{
         const newSale = this.saleRepository.create({
-            user: { id: sale.user.id },
+            // user: { id: sale.user.id },
+            salesman: { id: sale.salesman.id },
             status: sale.status,
             paymentMethod: sale.paymentMethod,
             pay_code: sale.pay_code,

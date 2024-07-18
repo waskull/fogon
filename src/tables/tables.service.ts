@@ -18,7 +18,7 @@ export class TablesService {
     async getMany(): Promise<any[]> {
         let tables: any[] = [];
 
-        tables = await this.tablesRepository.find({ order: { name: 'asc' }, relations:['sale','sale.sale_items','sale.sale_items.item','sale.user'] });
+        tables = await this.tablesRepository.find({ order: { name: 'asc' }, relations:['sale','sale.sale_items','sale.sale_items.item','sale.user','sale.salesman'] });
         return tables;
     }
     async getManyBy(available: boolean): Promise<Table[]> {

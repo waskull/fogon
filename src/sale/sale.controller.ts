@@ -145,9 +145,9 @@ export class SaleController {
         if (dto.paymentMethod !== (Method.Cash || Method.Credit_Card || Method.Debit_Card)) sale.pay_code = dto.pay_code
         sale.status = statusEnum.COMPLETED_TABLE;
         sale.total = 0.0;
-        sale.user = user;
+        sale.salesman = user;
         sale.isOrder = false;
-        if (!sale.user) throw new NotFoundException('Usuario Invalido');
+        // if (!sale.user) throw new NotFoundException('Usuario Invalido');
         const items = await this.itemService.getByIds(dto.items.map(a => a.id));
         if (items.length === 0 || items.length < dto.items.length) throw new NotFoundException('Uno o varios de los articulos enviados no existen en la base de datos');
         var saleItems: SaleItems[] = [];
@@ -227,7 +227,7 @@ export class SaleController {
     )
 
     @Patch('/confirm/:id')
-    async confirm(@Body() dto: editSaleDto, @Param('id', ParseIntPipe) id: number) {
+    async confirm(@Body() dto: editSaleDto, @Param('id', ParseIntPipe) id: number, @User() user: userEntity) {
         const sale = await this.saleService.getOne(id);
         if (sale.status !== statusEnum.INCOMPLETE) throw new BadRequestException(`El pedido seleccionado ya ha sido procesado`);
         let items:Item[] = [];
@@ -243,7 +243,7 @@ export class SaleController {
             item.stock -= e.quantity;
             await this.itemService.reduceInventory(item);
         });
-        await this.saleService.confirmSale(id, dto.delivery_man_id);
+        await this.saleService.confirmSale(id, dto.delivery_man_id, user);
         return { message: "Pedido aprobado y listo para ser entregado" }
     }
     @Auth(

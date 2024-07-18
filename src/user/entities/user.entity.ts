@@ -60,6 +60,8 @@ export class User{
     
     @OneToMany((type) => Sale, (sale) => sale.delivery_man)
     delivery_man: Sale[];
+    @OneToMany((type) => Sale, (sale) => sale.salesman)
+    salesman_sales: Sale[];
 	@OneToMany((type) => Sale, (sale) => sale.user)
     sales: Sale[];
 
